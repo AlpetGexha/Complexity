@@ -1,135 +1,145 @@
 <!DOCTYPE html>
-<html>
-
+<html style="height: 100%;">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Algorithm Complexity Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<style>
+    body,
+    html {
+        height: 100%;
+        margin: 0;
+    }
 
+    #myChart {
+        width: calc(100% - 100px);
+        height: calc(100% - 200px);
+    }
+</style>
 
 <body>
-
-    <div class="container">
-        <h1>Kompleksiteti i Algoritmeve</h1>
+    <div class="container" style="height: 100%;">
+        <h1>Algorithm Complexity Chart</h1>
         <input type="number" id="n" min="1" value="10" />
-        <canvas id="myChart" width="1000" height="1200"></canvas>
+        <canvas id="myChart"></canvas>
     </div>
 
     <script>
-        const n = 10;
-        // Define the complexity functions
-        function logarithmic(n) {
-            return Math.log2(n);
+        // Initialize the chart
+        let myChart;
+
+        function createChart(n) {
+            const n_values = [...Array(n + 1).keys()]; // Generate values from 0 to n
+
+            function logarithmic(n) {
+                return Math.ceil(Math.log2(n + 1)); // Add 1 to avoid log(0)
+            }
+
+            function linear(n) {
+                return Math.ceil(n);
+            }
+
+            function linear_logarithmic(n) {
+                return Math.ceil(n * Math.log2(n));
+            }
+
+            function quadratic(n) {
+                return Math.ceil(n * n);
+            }
+
+            function polynomial(n) {
+                return Math.ceil(n * n * n);
+            }
+
+            function exponential(n) {
+                return Math.ceil(Math.pow(2, n));
+            }
+
+            const logarithmic_values = n_values.map(logarithmic);
+            const linear_values = n_values.map(linear);
+            const linear_logarithmic_values = n_values.map(linear_logarithmic);
+            const quadratic_values = n_values.map(quadratic);
+            const polynomial_values = n_values.map(polynomial);
+            const exponential_values = n_values.map(exponential);
+
+            if (myChart) {
+                myChart.data.labels = n_values;
+                myChart.data.datasets[0].data = logarithmic_values;
+                myChart.data.datasets[1].data = linear_values;
+                myChart.data.datasets[2].data = linear_logarithmic_values;
+                myChart.data.datasets[3].data = quadratic_values;
+                myChart.data.datasets[4].data = polynomial_values;
+                myChart.data.datasets[5].data = exponential_values;
+                myChart.update();
+            } else {
+                const ctx = document.getElementById("myChart").getContext("2d");
+                myChart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: n_values,
+                        datasets: [{
+                                label: "Logarithmic",
+                                data: logarithmic_values,
+                                borderColor: "rgba(255, 99, 132, 1)",
+                                backgroundColor: "rgba(255, 99, 132, 0.2)",
+                                fill: false,
+                            },
+                            {
+                                label: "Linear",
+                                data: linear_values,
+                                borderColor: "rgba(54, 162, 235, 1)",
+                                backgroundColor: "rgba(54, 162, 235, 0.2)",
+                                fill: false,
+                            },
+                            {
+                                label: "Linear-Logarithmic",
+                                data: linear_logarithmic_values,
+                                borderColor: "rgba(255, 206, 86, 1)",
+                                backgroundColor: "rgba(255, 206, 86, 0.2)",
+                                fill: false,
+                            },
+                            {
+                                label: "Quadratic",
+                                data: quadratic_values,
+                                borderColor: "rgba(75, 192, 192, 1)",
+                                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                fill: false,
+                            },
+                            {
+                                label: "Cubic",
+                                data: polynomial_values,
+                                borderColor: "rgba(153, 102, 255, 1)",
+                                backgroundColor: "rgba(153, 102, 255, 0.2)",
+                                fill: false,
+                            },
+                            {
+                                label: "Exponential",
+                                data: exponential_values,
+                                borderColor: "rgba(255, 159, 64, 1)",
+                                backgroundColor: "rgba(255, 159, 64, 0.2)",
+                                fill: false,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: false,
+                    },
+                });
+            }
         }
 
-        function linear(n) {
-            return n;
-        }
-
-        function linear_logarithmic(n) {
-            return n * Math.log2(n);
-        }
-
-        function quadratic(n) {
-            return n * n;
-        }
-
-        function polynomial(n) {
-            return n * n * n;
-        }
-
-        function exponential(n) {
-            return Math.pow(2, n);
-        }
-
-        const n_values = [...Array(n).keys()];
-//        n_values.shift();
-
-        const logarithmic_values = n_values.map(function (n) {
-            return logarithmic(n);
+        document.getElementById("n").addEventListener("input", function () {
+            const n = parseInt(this.value, 10);
+            if (!isNaN(n) && n >= 1) {
+                createChart(n);
+            }
         });
 
-        const linear_values = n_values.map(function (n) {
-            return linear(n);
-        });
-
-        const linear_logarithmic_values = n_values.map(function (n) {
-            return linear_logarithmic(n);
-        });
-
-        const quadratic_values = n_values.map(function (n) {
-            return quadratic(n);
-        });
-
-        const polynomial_values = n_values.map(function (n) {
-            return polynomial(n);
-        });
-
-        const exponential_values = n_values.map(function (n) {
-            return exponential(n);
-        });
-
-        // Create the chart
-        const ctx = document.getElementById("myChart").getContext("2d");
-
-        const myChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: n_values,
-                datasets: [{
-                        label: "Logaritmik",
-                        data: logarithmic_values,
-                        borderColor: "rgba(255, 99, 132, 1)",
-                        backgroundColor: "rgba(255, 99, 132, 0.2)",
-                        fill: false,
-                    },
-                    {
-                        label: "Linar",
-                        data: linear_values,
-                        borderColor: "rgba(54, 162, 235, 1)",
-                        backgroundColor: "rgba(54, 162, 235, 0.2)",
-                        fill: false,
-                    },
-                    {
-                        label: "Linar-Logaritmik",
-                        data: linear_logarithmic_values,
-                        borderColor: "rgba(255, 206, 86, 1)",
-                        backgroundColor: "rgba(255, 206, 86, 0.2)",
-                        fill: false,
-                    },
-                    {
-                        label: "Kuadrik",
-                        data: quadratic_values,
-                        borderColor: "rgba(75, 192, 192, 1)",
-                        backgroundColor: "rgba(75, 192, 192, 0.2)",
-                        fill: false,
-                    },
-                    {
-                        label: "Kubik",
-                        data: polynomial_values,
-                        borderColor: "rgba(153, 102, 255, 1)",
-                        backgroundColor: "rgba(153, 102, 255, 0.2)",
-                        fill: false,
-                    },
-                    {
-                        label: "Exponencial",
-                        data: exponential_values,
-                        borderColor: "rgba(255, 159, 64, 1)",
-                        backgroundColor: "rgba(255, 159, 64, 0.2)",
-                        fill: false,
-                    },
-                ],
-            },
-            options: {
-                responsive: false,
-            },
-        });
-
+        createChart(parseInt(document.getElementById("n").value, 10));
     </script>
-
 </body>
 
 </html>
